@@ -14,6 +14,7 @@ class _HomeState extends State<Home> {
   late HttpHelper helper;
  late int moviescount;
   late var movies;
+  bool isloading = true;
   @override
   void initState(){
     super.initState();
@@ -21,18 +22,28 @@ class _HomeState extends State<Home> {
     initialize();
     
   }
+  @override
+  Duration get transitionDuration => const Duration(milliseconds: 1000);
   Future initialize() async {
     movies = await helper.getUpcoming();
-    print(movies.length);
-    print("Abhishek");
     setState(() {
       moviescount = movies.length;
       movies = movies;
+      isloading = false;
     });
   }
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context)
+  {
     NetworkImage image;
+  if (isloading == true) {
+    return Center(
+      child:CircularProgressIndicator()
+    );
+    
+  }
+  else {
+    
    return Scaffold(
      backgroundColor: Color(0xfff0f0f0),
      body: SafeArea(
@@ -77,15 +88,18 @@ class _HomeState extends State<Home> {
                             child: Row(
                               children: [
                                   Icon(Icons.search,size: 20.0,color: Colors.grey,),
-                                  // TextField(
-                                  //   decoration: InputDecoration(
-                                  //     hintText: 'Search Movie',
+                                  Container(
+                                    width: 200.0,
+                                    child: TextField(
+                                      decoration: InputDecoration(
+                                        hintText: 'Search Movie',
 
-                                  //   ),
-                                  //   // autofocus: true,
-                                  //   // autocorrect: true,
+                                      ),
+                                      // autofocus: true,
+                                      // autocorrect: true,
 
-                                  // )
+                                    ),
+                                  )
                               ],
                             ),
                           ),
@@ -95,7 +109,7 @@ class _HomeState extends State<Home> {
                     
                     Container(
                       child: Padding(
-                        padding: const EdgeInsets.only(top:158),
+                        padding: const EdgeInsets.only(top:160),
                         child: ListView.builder(
            itemCount: moviescount,
            itemBuilder: (BuildContext context, int index){
@@ -117,6 +131,8 @@ class _HomeState extends State<Home> {
      )
       
     );
+  
+  }
   }
 }
 
@@ -124,6 +140,7 @@ class _HomeState extends State<Home> {
 
 
 class BuildCard extends StatelessWidget {
+  
  
   final NetworkImage image;
   final Movie movies;
@@ -134,66 +151,77 @@ class BuildCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
-      child: Container(
-       
-        height: 100.0,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(25.0),
-        color: Colors.white
+      child: GestureDetector(
+        onTap: (){
+          Navigator.push(context, 
+          MaterialPageRoute(
+            builder: (BuildContext context)=> MovieDetail(image,movies,index))
+            );
+        },
+              child: Hero(
+                tag: "movies"+index.toString(),
+                              child: Container(
+         
+          height: 100.0,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(25.0),
+          color: Colors.white
+            
+          ),
           
-        ),
-        
-        child: Row(
-          children: [
-            Container(
-              margin: EdgeInsets.only(left: 8.0),
-              height: 50.0,
-              width: 50.0,
-             decoration: BoxDecoration(
-               borderRadius: BorderRadius.circular(50.0),
-               border: Border.all(width: 3,color: Colors.red.shade300),
-               image: DecorationImage(image: image,fit: BoxFit.fill)
-             ),
-            ),
-            VerticalDivider(
-              color: Colors.blueAccent,
-              thickness: 1,
-              ),
-              Expanded(
-                child: Container(
-                 child: Column(
-                   crossAxisAlignment: CrossAxisAlignment.start,
-                   children: [
-                     Text(movies.title,
-                     style: TextStyle(
-                       color: Colors.lightBlue.shade700,
-                       fontWeight: FontWeight.bold,
-                       fontSize: 18.0
-                     ),
-                     ),
-                     SizedBox(height: 5.0,)
-                     ,Row(
-                       children: [
-                         Icon(Icons.date_range_rounded,color: Colors.red.shade300,size: 20.0,),
-                        SizedBox(width: 5.0,),
-                         Text(movies.releaseDate,style: TextStyle(color: Colors.lightBlue.shade700,fontSize: 13.0),)
-                       ],
-                     ),
-                      SizedBox(height: 5.0,)
-                     ,Row(
-                       children: [
-                         Icon(Icons.rate_review,color: Colors.red.shade300,size: 20.0,),
-                        SizedBox(width: 5.0,),
-                         Text(movies.voteAverage.toString(),style: TextStyle(color: Colors.lightBlue.shade700,fontSize: 13.0),)
-                       ],
-                     ),
-                    
-                   ],
+          child: Row(
+            children: [
+                Container(
+                  margin: EdgeInsets.only(left: 8.0),
+                  height: 50.0,
+                  width: 50.0,
+                 decoration: BoxDecoration(
+                   borderRadius: BorderRadius.circular(50.0),
+                   border: Border.all(width: 3,color: Colors.red.shade300),
+                   image: DecorationImage(image: image,fit: BoxFit.fill)
                  ),
-                )
                 ),
-          ],
+                VerticalDivider(
+                  color: Colors.blueAccent,
+                  thickness: 1,
+                  ),
+                  Expanded(
+                    child: Container(
+                     child: Column(
+                       crossAxisAlignment: CrossAxisAlignment.start,
+                       children: [
+                         Text(movies.title,
+                         style: TextStyle(
+                           color: Colors.lightBlue.shade700,
+                           fontWeight: FontWeight.bold,
+                           fontSize: 18.0
+                         ),
+                         ),
+                         SizedBox(height: 5.0,)
+                         ,Row(
+                           children: [
+                             Icon(Icons.date_range_rounded,color: Colors.red.shade300,size: 20.0,),
+                            SizedBox(width: 5.0,),
+                             Text(movies.releaseDate,style: TextStyle(color: Colors.lightBlue.shade700,fontSize: 13.0),)
+                           ],
+                         ),
+                          SizedBox(height: 5.0,)
+                         ,Row(
+                           children: [
+                             Icon(Icons.rate_review,color: Colors.red.shade300,size: 20.0,),
+                            SizedBox(width: 5.0,),
+                             Text(movies.voteAverage.toString(),style: TextStyle(color: Colors.lightBlue.shade700,fontSize: 13.0),)
+                           ],
+                         ),
+                        
+                       ],
+                     ),
+                    )
+                    ),
+            ],
+          ),
         ),
+              ),
       ),
     );
   }

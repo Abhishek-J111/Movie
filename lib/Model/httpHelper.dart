@@ -8,7 +8,7 @@ class HttpHelper{
   final String urlKey = 'api_key=6b70c8fa711ab3610df52a603a00995e';
   final String urlBase = 'https://api.themoviedb.org/3/movie';
   final String urlUpcoming = '/upcoming?';
- 
+  // final String urlSearchBase = 'https://api.themoviedb.org/3/search/movie?api_key=6b70c8fa711ab3610df52a603a00995e&query=';
  Future getUpcoming() async{
     final String upcoming = urlBase + urlUpcoming + urlKey;
 
